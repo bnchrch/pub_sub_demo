@@ -28,15 +28,46 @@ defmodule PubSubDemo.PubSub.Listener do
   end
 
   @doc """
-  Listen for changes
+  Listen for changes in the users table
   """
   def handle_info({:notification, _pid, _ref, "users_changes", payload}, _state) do
     payload
     |> decode!()
-    |> IO.inspect()
+    |> handle_user_changes()
 
     {:noreply, :event_handled}
   end
 
   def handle_info(_, _state), do: {:noreply, :event_received}
+
+  @doc """
+  Listen for new users and log when created
+  """
+  def handle_user_changes(%{
+    "type" => "INSERT",
+    "new_row_data" => %{
+      "name" => name
+    }
+  }) do
+    IO.puts("New user created with the name: #{name}")
+  end
+
+  @doc """
+  Listen anf log when users change their payment plan
+  """
+  def handle_user_changes(%{
+    "type" => "UPDATE",
+    "old_row_data" => %{
+      "name" => old_name,
+      "payment_plan" => old_payment_plan,
+    },
+    "new_row_data" => %{
+      "name" => new_name,
+      "payment_plan" => new_payment_plan,
+    },
+  }) when old_payment_plan != new_payment_plan do
+    IO.puts("#{new_name} updated their payment plan from #{old_payment_plan} to #{new_payment_plan}")
+  end
+
+  def handle_user_changes(payload), do: nil
 end
