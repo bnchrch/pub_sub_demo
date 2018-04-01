@@ -12,8 +12,12 @@ defmodule PubSubDemo.Application do
       supervisor(PubSubDemo.Repo, []),
       # Start the endpoint when the application starts
       supervisor(PubSubDemoWeb.Endpoint, []),
-      # Start your own worker by calling: PubSubDemo.Worker.start_link(arg1, arg2, arg3)
-      # worker(PubSubDemo.Worker, [arg1, arg2, arg3]),
+      # Start Database Change Listener
+      worker(
+        PubSubDemo.PubSub.Listener,
+        ["users_changes", [name: PubSubDemo.PubSub.Listener]],
+        restart: :permanent
+      )
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
