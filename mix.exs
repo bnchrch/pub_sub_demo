@@ -20,7 +20,7 @@ defmodule PubSubDemo.Mixfile do
   def application do
     [
       mod: {PubSubDemo.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :bamboo]
     ]
   end
 
@@ -42,6 +42,7 @@ defmodule PubSubDemo.Mixfile do
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
       {:httpoison, "~> 1.0"},
+      {:bamboo, "~> 0.8"},
     ]
   end
 

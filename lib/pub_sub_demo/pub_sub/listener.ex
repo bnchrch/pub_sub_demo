@@ -4,6 +4,8 @@ defmodule PubSubDemo.PubSub.Listener do
   require Logger
 
   import Poison, only: [decode!: 1]
+  import Bamboo.Email
+
 
   @moduledoc """
   Subscribes to a set of given topics at startup and listens for specific events
@@ -41,7 +43,7 @@ defmodule PubSubDemo.PubSub.Listener do
   def handle_info(_, _state), do: {:noreply, :event_received}
 
   @doc """
-  Listen for new users and log when created
+  Listen for new users and email when created
   """
   def handle_user_changes(%{
     "type" => "INSERT",
@@ -49,11 +51,13 @@ defmodule PubSubDemo.PubSub.Listener do
       "name" => name
     }
   }) do
-    IO.puts("New user created with the name: #{name}")
+    subject = "User Created!"
+    body = "New user created with the name: #{name}"
+    send_email(subject, body)
   end
 
   @doc """
-  Listen anf log when users change their payment plan
+  Listen and email when users change their payment plan
   """
   def handle_user_changes(%{
     "type" => "UPDATE",
@@ -66,8 +70,22 @@ defmodule PubSubDemo.PubSub.Listener do
       "payment_plan" => new_payment_plan,
     },
   }) when old_payment_plan != new_payment_plan do
-    IO.puts("#{new_name} updated their payment plan from #{old_payment_plan} to #{new_payment_plan}")
+    subject = "Subscription Updated!"
+    body = "#{new_name} updated their payment plan from #{old_payment_plan} to #{new_payment_plan}"
+
+    send_email(subject, body)
   end
 
   def handle_user_changes(payload), do: nil
+
+  def send_email(subject, body) do
+    new_email(
+      to: "email@ben.church",
+      from: "support@myapp.com",
+      subject: subject,
+      html_body: "<strong>#{body}</strong>",
+      text_body: body
+    )
+    |> PubSubDemo.Mailer.deliver_now()
+  end
 end
