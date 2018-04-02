@@ -1,5 +1,9 @@
-# PubSubDemo
+# Pub Sub Demo
+A demo meant to show how you can send out notification based directly on changes to your database using Phoenix PubSub and Postgrex.
 
+Blog post here: https://medium.com/@bnchrch/get-notified-of-user-signups-and-plan-changes-automatically-using-postgres-phoenix-pubsub-e67d061b04bc
+
+## Running
 To start your Phoenix server:
 
   * Install dependencies with `mix deps.get`
